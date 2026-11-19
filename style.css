@@ -1,0 +1,42 @@
+/* Custom Styles & Overrides */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Subtle Grid Background Pattern for Hero */
+.bg-grid-pattern {
+    background-image: radial-gradient(#bfdbfe 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Custom Scrollbar (Blue & White Theme) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2563eb;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1d4ed8;
+}
+
+/* Remove number input spinner arrows for cleaner UI */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Rere's Laundry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Top Navbar -->
+    <header class="bg-white border-b border-blue-100 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-blue-950">Rere's Laundry</span>
+                    <span class="ml-2 text-xs font-bold bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-md border border-blue-200">Admin Panel</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="text-xs font-semibold text-slate-600 hover:text-blue-600 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Website Pelanggan
+                </a>
+                <button id="logout-btn" class="hidden text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3.5 py-1.5 rounded-lg transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <div id="login-section" class="max-w-md mx-auto mt-16 px-4">
+        <div class="bg-white p-8 rounded-3xl border border-blue-100 shadow-xl shadow-blue-900/5">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl mb-4">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-blue-950">Login Pengelola</h1>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Gunakan akun Email & Password Admin yang terdaftar di Firebase.</p>
+
+            <div id="login-error" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold"></div>
+
+            <form id="admin-login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1.5">Email Admin</label>
+                    <input type="email" id="admin-email" required placeholder="admin@rereslaundry.id" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1.5">Password</label>
+                    <input type="password" id="admin-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <button type="submit" id="login-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-600/20 transition">
+                    Masuk ke Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <main id="dashboard-section" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <!-- Header & Live Indicator -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-extrabold text-blue-950">Manajemen Pesanan & Resi</h2>
+                <p class="text-sm text-slate-500">Pesanan baru dari website muncul otomatis secara real-time.</p>
+            </div>
+            <div class="inline-flex items-center px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold self-start">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-ping"></span>
+                Sinkronisasi Firebase Aktif
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                <span class="text-xs font-bold text-slate-400 uppercase">Total Pesanan</span>
+                <div id="stat-total" class="text-3xl font-extrabold text-blue-950 mt-1">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                <span class="text-xs font-bold text-amber-500 uppercase">1. Penjemputan</span>
+                <div id="stat-step1" class="text-3xl font-extrabold text-blue-950 mt-1">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                <span class="text-xs font-bold text-blue-600 uppercase">2-3. Cuci & Setrika</span>
+                <div id="stat-process" class="text-3xl font-extrabold text-blue-950 mt-1">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                <span class="text-xs font-bold text-emerald-600 uppercase">4. Selesai</span>
+                <div id="stat-step4" class="text-3xl font-extrabold text-blue-950 mt-1">0</div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                <button onclick="setFilter('all')" class="filter-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition" data-filter="all">Semua</button>
+                <button onclick="setFilter('1')" class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-blue-50 transition" data-filter="1">1. Penjemputan</button>
+                <button onclick="setFilter('2')" class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-blue-50 transition" data-filter="2">2. Pencucian</button>
+                <button onclick="setFilter('3')" class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-blue-50 transition" data-filter="3">3. Setrika</button>
+                <button onclick="setFilter('4')" class="filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-blue-50 transition" data-filter="4">4. Selesai</button>
+            </div>
+            <div class="relative w-full md:w-72">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="search-input" placeholder="Cari No. Resi atau Nama..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-blue-50/70 border-b border-blue-100 text-xs font-bold uppercase text-blue-950">
+                            <th class="py-4 px-5">Resi & Tanggal</th>
+                            <th class="py-4 px-5">Pelanggan & Alamat</th>
+                            <th class="py-4 px-5">Layanan & Catatan</th>
+                            <th class="py-4 px-5">Berat (Kg) & Tagihan</th>
+                            <th class="py-4 px-5">Status Progres</th>
+                            <th class="py-4 px-5 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body" class="divide-y divide-slate-100 text-sm">
+                        <tr>
+                            <td colspan="6" class="text-center py-10 text-slate-400">Memuat data pesanan...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { db, auth } from './firebase-config.js';
+        import {
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import {
+            collection,
+            doc,
+            updateDoc,
+            deleteDoc,
+            onSnapshot,
+            query,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        const STEP_LABELS = {
+            1: 'Menunggu Penjemputan Kurir',
+            2: 'Sedang Dalam Proses Pencucian',
+            3: 'Proses Setrika Uap & Pengemasan',
+            4: 'Selesai & Siap Diantar'
+        };
+
+        let allOrders = [];
+        let currentFilter = 'all';
+        let unsubscribeOrders = null;
+
+        // Pantau status login Admin
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
+                listenToOrders();
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+                if (unsubscribeOrders) unsubscribeOrders();
+            }
+        });
+
+        // Proses Login
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const errorBox = document.getElementById('login-error');
+            const btn = document.getElementById('login-submit-btn');
+
+            errorBox.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = 'Memeriksa Akun...';
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                errorBox.innerText = 'Login gagal: Email atau password salah.';
+                errorBox.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Masuk ke Dashboard';
+            }
+        });
+
+        // Proses Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // Dengarkan perubahan data Firestore secara Real-Time
+        function listenToOrders() {
+            const q = query(collection(db, 'orders'), orderBy('timestamp', 'desc'));
+            unsubscribeOrders = onSnapshot(q, (snapshot) => {
+                allOrders = snapshot.docs.map(docSnap => docSnap.data());
+                updateStats();
+                renderTable();
+            }, (error) => {
+                console.error("Error membaca pesanan:", error);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = allOrders.length;
+            document.getElementById('stat-step1').innerText = allOrders.filter(o => o.step === 1).length;
+            document.getElementById('stat-process').innerText = allOrders.filter(o => o.step === 2 || o.step === 3).length;
+            document.getElementById('stat-step4').innerText = allOrders.filter(o => o.step === 4).length;
+        }
+
+        function setFilter(filterVal) {
+            currentFilter = filterVal;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-filter') === filterVal) {
+                    btn.className = 'filter-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white transition';
+                } else {
+                    btn.className = 'filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-blue-50 transition';
+                }
+            });
+            renderTable();
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderTable);
+
+        function renderTable() {
+            const tbody = document.getElementById('orders-table-body');
+            const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+
+            const filtered = allOrders.filter(order => {
+                const matchFilter = currentFilter === 'all' || String(order.step) === currentFilter;
+                const matchSearch =
+                    order.resi.toLowerCase().includes(keyword) ||
+                    order.customer_name.toLowerCase().includes(keyword);
+                return matchFilter && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">Tidak ada data pesanan yang sesuai.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(order => `
+                <tr class="hover:bg-slate-50/80 transition align-top">
+                    <td class="py-4 px-5 whitespace-nowrap">
+                        <span class="inline-block font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-md text-xs">${order.resi}</span>
+                        <div class="text-xs text-slate-400 mt-1">${order.created_at_text || '-'}</div>
+                    </td>
+                    <td class="py-4 px-5">
+                        <div class="font-bold text-blue-950">${order.customer_name}</div>
+                        <div class="text-xs text-blue-600 font-medium">${order.phone}</div>
+                        <div class="text-xs text-slate-500 mt-1 max-w-xs">${order.address}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Jadwal: ${order.pickup_time}</div>
+                    </td>
+                    <td class="py-4 px-5">
+                        <div class="font-semibold text-slate-800">${order.service}</div>
+                        <div class="text-xs text-slate-500 mt-1">Catatan: ${order.notes || '-'}</div>
+                    </td>
+                    <td class="py-4 px-5 space-y-2">
+                        <div class="flex items-center space-x-1.5">
+                            <input type="number" step="0.5" min="0" id="weight-${order.resi}" value="${order.weight_kg || 0}" class="w-16 px-2 py-1 text-xs font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-blue-600">
+                            <span class="text-xs text-slate-500">kg</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-xs text-slate-500">Rp</span>
+                            <input type="number" step="500" min="0" id="price-${order.resi}" value="${order.total_price || 0}" class="w-24 px-2 py-1 text-xs font-bold border border-slate-200 rounded-lg focus:outline-none focus:border-blue-600">
+                        </div>
+                    </td>
+                    <td class="py-4 px-5">
+                        <select id="step-${order.resi}" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-200 bg-white text-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                            <option value="1" ${order.step === 1 ? 'selected' : ''}>1. Penjemputan</option>
+                            <option value="2" ${order.step === 2 ? 'selected' : ''}>2. Pencucian</option>
+                            <option value="3" ${order.step === 3 ? 'selected' : ''}>3. Setrika Uap</option>
+                            <option value="4" ${order.step === 4 ? 'selected' : ''}>4. Selesai & Siap Antar</option>
+                        </select>
+                    </td>
+                    <td class="py-4 px-5 text-right whitespace-nowrap space-x-1.5">
+                        <button onclick="saveOrder('${order.resi}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
+                            Simpan
+                        </button>
+                        <button onclick="notifyCustomerWA('${order.resi}')" title="Kirim Info Status ke WA Pelanggan" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1.5 rounded-lg transition">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                        <button onclick="removeOrder('${order.resi}')" title="Hapus Pesanan" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Simpan perubahan status, berat, dan harga ke Firestore
+        async function saveOrder(resi) {
+            const step = Number(document.getElementById(`step-${resi}`).value);
+            const weight_kg = Number(document.getElementById(`weight-${resi}`).value);
+            const total_price = Number(document.getElementById(`price-${resi}`).value);
+
+            try {
+                await updateDoc(doc(db, 'orders', resi), {
+                    step: step,
+                    status_text: STEP_LABELS[step],
+                    weight_kg: weight_kg,
+                    total_price: total_price
+                });
+                alert(`Status resi ${resi} berhasil diperbarui!`);
+            } catch (err) {
+                console.error(err);
+                alert('Gagal memperbarui data. Pastikan Anda sudah login.');
+            }
+        }
+
+        // Kirim notifikasi status terbaru ke WhatsApp pelanggan
+        function notifyCustomerWA(resi) {
+            const order = allOrders.find(o => o.resi === resi);
+            if (!order) return;
+
+            let cleanPhone = order.phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = '62' + cleanPhone.slice(1);
+            }
+
+            const totalFormatted = Number(order.total_price).toLocaleString('id-ID');
+            const text = `Halo Kak *${order.customer_name}*, berikut update pesanan laundry Anda di *Rere's Laundry*:%0A%0A` +
+                `• *No. Resi:* ${order.resi}%0A` +
+                `• *Status Terkini:* ${order.status_text}%0A` +
+                `• *Berat Aktual:* ${order.weight_kg} kg%0A` +
+                `• *Total Tagihan:* Rp ${totalFormatted}%0A%0A` +
+                `Terima kasih telah mempercayakan pakaian Anda kepada kami!`;
+
+            window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
+        }
+
+        // Hapus pesanan
+        async function removeOrder(resi) {
+            if (!confirm(`Yakin ingin menghapus permanen pesanan ${resi}?`)) return;
+            try {
+                await deleteDoc(doc(db, 'orders', resi));
+            } catch (err) {
+                alert('Gagal menghapus pesanan.');
+            }
+        }
+
+        window.setFilter = setFilter;
+        window.saveOrder = saveOrder;
+        window.notifyCustomerWA = notifyCustomerWA;
+        window.removeOrder = removeOrder;
+    </script>
+</body>
+</html>
